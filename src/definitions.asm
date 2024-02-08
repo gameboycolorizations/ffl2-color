@@ -1,0 +1,26 @@
+; Hardware definitions
+
+.DEFINE LCDC $FF40				; LCD Control
+.DEFINE STAT $FF41				; LCDC Status
+.DEFINE VBK	$FF4F				; VRAM Bank
+.DEFINE SVBK $FF70				; WRAM Bank
+.DEFINE BCPS $FF68				; Background Palette Index (GBC)
+.DEFINE BCPD $FF69				; Background Palette Data (GBC)
+.DEFINE OCPS $FF6A				; Sprite Palette Index (GBC)
+.DEFINE OCPD $FF6B				; Sprite Palette Data (GBC)
+
+.DEFINE ROM0 $0000
+.DEFINE ROM1 $4000
+.DEFINE WRAM0 $C000
+.DEFINE WRAM1 $D000
+
+; Constants
+.DEFINE CHANGE_BANK				$2100
+
+; Definitions
+.DEFINE WRAM_DEFAULT_BANK		$01
+.DEFINE WRAM_METATILE_BANK		$02
+.DEFINE WRAM_PALETTE_BANK 		$03
+.DEFINE WRAM_BATTLE_BANK		$04
+.DEFINE WRAM_SPRITE_BANK		$05
+

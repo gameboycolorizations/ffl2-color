@@ -1,0 +1,6 @@
+*.sav
+*.o
+*.gbc
+*.sym
+bgb/bgbrecovery.sna
+bgb/bgb.ini
