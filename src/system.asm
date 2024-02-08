@@ -21,7 +21,7 @@ _copyCodeLoop:
 
 .SECTION "FarCodeLoader" FREE PRIORITY -1
 InitializeFarCode:
-	ld b,b
+	nop
 .ENDS
 
 .SECTION "FarCodeLoaderEnd" FREE PRIORITY -1000

@@ -7,19 +7,161 @@
 .DEFINE WRAM_TITLEPALETTE_ADDR  WRAM1 + WRAM_PALETTE_SIZE * 3
 .DEFINE WRAM_PALETTE_CODE       WRAM1 + $0400
 
+.BANK $00 SLOT 0
+.ORGA $19F4
+.SECTION "FadeMap19F4_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $28FE
+.SECTION "FadeMap28FE_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $2CF0
+.SECTION "FadeMap2CF0_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $3201
+.SECTION "FadeMap3201_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $3EC6
+.SECTION "FadeMap3EC5_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $3E80
+.SECTION "FadeMap3E80_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+
 .BANK $01 SLOT 1
+.ORGA $5473
+.SECTION "Fade5473_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $5ED3
+.SECTION "Fade5ED3_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+.ENDS
 .ORGA $5F0F
-.SECTION "Fade" OVERWRITE
+.SECTION "Fade5F0F_Hook" OVERWRITE
     di
     SET_WRAMBANK WRAM_PALETTE_BANK
-    ld a, $0
+    xor a
+    ld ($C700), a
     call WRAM_PALETTE_CODE + FadeOut - PALETTE_CODE_START
     RESET_WRAMBANK
     ei
     nop
     nop
+.ENDS
+.ORGA $5EB9
+.SECTION "Fade5EB9_Hook" OVERWRITE
+    call FadeMap
     nop
     nop
+    nop
+.ENDS
+.ORGA $5F24
+.SECTION "Fade5F24_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $6D2D
+.SECTION "Fade6D2D_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+.ENDS
+
+.BANK $0F SLOT 1
+.ORGA $609A
+.SECTION "Fade609A_Hook" OVERWRITE
+    call FadeMap
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $6132
+.SECTION "Fade6132_Hook" OVERWRITE
+    ld ($C700), a
+    call FadeMap
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $61F4
+.SECTION "Fade61F6_Hook" OVERWRITE
+    ;A happens to be FF here, and the intent is to fade in, so don't worry about fitting in ld a, $D2
+    call FadeMap
+    nop
+.ENDS
+
+.BANK $00 SLOT 0
+.SECTION "FadeMap_Code" FREE
+    FadeMap:
+    di
+    push af
+    SET_WRAMBANK WRAM_PALETTE_BANK
+    pop af
+    swap a
+    srl a
+    srl a
+    and $03
+    push bc
+    ld b, a
+    ld a, 2
+    sub b
+    jr nc, _callFadeOut
+    xor a
+_callFadeOut:
+    pop bc
+    call WRAM_PALETTE_CODE + FadeOut - PALETTE_CODE_START
+    RESET_WRAMBANK
+    ei
     ret
 .ENDS
 
@@ -67,7 +209,98 @@ InitialPalEnd:
 
 .BANK $10 SLOT 1
 .SECTION "PaletteCode" FREE
+;Initialize fade lookup tables
+InitializeFadeLookup:
+    di
+    PUSH_ALL
+        
+    SET_WRAMBANK WRAM_PALETTE_BANK
+
+    ld hl, WRAM_PALETTE_ADDR
+    ld c, 1 
+    ld b, $FF
+    call LoadFadeLevel
+
+    ld hl, WRAM_BGPALETTE_ADDR + (WRAM_PALETTE_SIZE * 8)
+    ld b, $FF
+    call LoadFadeBlack
+
+    RESET_WRAMBANK
+
+    POP_ALL
+    ei
+    ret
+
+LoadFadeLevel:
+    PUSH_ALL
+    inc c
+    srl b
+
+_colorLoop:
+    ldi a, (hl)
+    ld e, a
+    ldi a, (hl)
+    ld d, a
+    push bc
+ _fadeLoop:
+    dec c
+    jp z, _fadeLoopDone
+    ld a, d
+    and a, $7B
+    srl a
+    ld d, a
+    ld a, e
+    rr a
+    and a, $EF
+    ld e, a
+    jr _fadeLoop
+_fadeLoopDone:
+    pop bc
+    push hl
+
+    ;HL = HL - 2 + (0x100 * (c - 1))
+    ld a, c
+    dec a
+    add a, h
+    ld h, a
+    dec l
+    dec l
+    
+    ld a, e
+    ldi (hl), a
+    ld a, d
+    ldi (hl), a
+    
+    pop hl
+
+    dec b
+    jr nz, _colorLoop
+    
+    POP_ALL
+    ret
+
+;Load black palette into cache.  Requires wram bank already set
+;@param HL  Target address
+;@param B   Count
+LoadFadeBlack:
+    push af
+    push bc
+
+    ld a, 0
+@loop:
+    ldi (hl), a 
+    dec b
+    jr nz, @loop
+    
+    pop bc
+    pop af
+    ret
+.ENDS
+
+.BANK $10 SLOT 1
+.SECTION "PaletteFarCode" FREE
 PALETTE_CODE_START:
+;a = fadeout level (0 = none, 1 = 50%, 2 = black)
 FadeOut:
     push af
     push bc
@@ -149,6 +382,8 @@ PALETTE_CODE_END:
     ld de, WRAM_PALETTE_ADDR
     ld hl, InitialPal
     call CopyFarCodeToWRAM
+
+    call InitializeFadeLookup
 
     ld a, WRAM_PALETTE_BANK
     ld bc, PALETTE_CODE_END - PALETTE_CODE_START

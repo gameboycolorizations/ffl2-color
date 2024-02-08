@@ -18,6 +18,15 @@
 .COMPUTEGBCHECKSUM              ; Computes the ROM checksum ($014E-$014F)
 
 .BACKGROUND "Final Fantasy Legend II (USA).gb"
+.UNBACKGROUND $3FF9 $3FFF       ; Free space in bank $00
+.UNBACKGROUND $7E28 $7FFF       ; Free space in bank $01
+.UNBACKGROUND $FFC0 $FFFF       ; Free space in bank $03
+.UNBACKGROUND $27E01 $27FFF     ; Free space in bank $09
+.UNBACKGROUND $2FFCF $2FFFF     ; Free space in bank $0B
+.UNBACKGROUND $33FF3 $33FFF     ; Free space in bank $0C
+.UNBACKGROUND $37EB5 $37FFF     ; Free space in bank $0D
+.UNBACKGROUND $3BFE8 $3BFFF     ; Free space in bank $0E
+.UNBACKGROUND $3FD2D $3FFFF     ; Free space in bank $0F
 
 .include "macros.asm"			; Macros 
 
@@ -33,20 +42,20 @@
 
 ;00000 Main code
 ;04000 Unknown
-;08000 Spell sprites
-;0c000 font, NPC sprites, effect sprites
-;10000 Monster/Player Sprites
-;14000 Tiles
-;18000 Metatile data (and map data?)
+;08000 Map tiles
+;0c000 Sprites
+;10000 Font/Title Image/Ending Image/Effect Sprites
+;14000 Monsters
+;18000 Monsters
 ;1C000 Unknown
 ;20000 Unknown
-;24000 Menu code
+;24000 Unknown
 ;28000 Unknown
-;2C000 Battle code
+;2C000 Unknown
 ;30000 Unknown
 ;34000 Unknown
 ;38000 Unknown
-;3C000 Textbox code
+;3C000 Unknown
 
 ;0028 bankswitch a:bank
 ;006C memclr hl:addr b:count
@@ -98,9 +107,9 @@ FFL2Initialize:
     ldh  ($0F),a
     ldh  ($FF),a
     ldh  ($41),a
-    ldh  ($47),a
-    ldh  ($48),a
-    ldh  ($49),a
+    ;ldh  ($47),a
+    ;ldh  ($48),a
+    ;ldh  ($49),a
     ldh  ($43),a
     ldh  ($42),a
     ld   b,a
