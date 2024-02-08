@@ -5,47 +5,67 @@
 .DEFINE WRAM_OBJPALETTE_ADDR    WRAM1 + WRAM_PALETTE_SIZE
 .DEFINE WRAM_BATTLEPALETTE_ADDR WRAM1 + WRAM_PALETTE_SIZE * 2
 .DEFINE WRAM_TITLEPALETTE_ADDR  WRAM1 + WRAM_PALETTE_SIZE * 3
+.DEFINE WRAM_PALETTE_LOOKUP     WRAM1 + $0300
 .DEFINE WRAM_PALETTE_CODE       WRAM1 + $0400
 
 .BANK $00 SLOT 0
 .ORGA $19F4
-.SECTION "FadeMap19F4_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade19F4_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $28FE
-.SECTION "FadeMap28FE_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade28FE_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $2BDE
+.SECTION "SetFade2BDE_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $2CF0
-.SECTION "FadeMap2CF0_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade2CF0_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
 .ENDS
+.ORGA $2D31
+.SECTION "SetFade2D31_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $2D62
+.SECTION "FadeIn2D62_Hook" OVERWRITE
+    call FadeIn
+    nop
+.ENDS
 .ORGA $3201
-.SECTION "FadeMap3201_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade3201_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $3EC6
-.SECTION "FadeMap3EC5_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade3EC5_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $3E80
-.SECTION "FadeMap3E80_Hook" OVERWRITE
-    call FadeMap
+.SECTION "SetFade3E80_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop
@@ -54,14 +74,14 @@
 .BANK $01 SLOT 1
 .ORGA $5473
 .SECTION "Fade5473_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $5ED3
 .SECTION "Fade5ED3_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
@@ -73,31 +93,30 @@
 .SECTION "Fade5F0F_Hook" OVERWRITE
     di
     SET_WRAMBANK WRAM_PALETTE_BANK
-    xor a
+    ld a, $D2
     ld ($C700), a
-    call WRAM_PALETTE_CODE + FadeOut - PALETTE_CODE_START
+    call WRAM_PALETTE_CODE + SetFade_Far - PALETTE_CODE_START
     RESET_WRAMBANK
     ei
-    nop
     nop
 .ENDS
 .ORGA $5EB9
 .SECTION "Fade5EB9_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $5F24
 .SECTION "Fade5F24_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
 .ENDS
 .ORGA $6D2D
 .SECTION "Fade6D2D_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
@@ -110,7 +129,7 @@
 .BANK $0F SLOT 1
 .ORGA $609A
 .SECTION "Fade609A_Hook" OVERWRITE
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
@@ -118,7 +137,7 @@
 .ORGA $6132
 .SECTION "Fade6132_Hook" OVERWRITE
     ld ($C700), a
-    call FadeMap
+    call SetFade
     nop
     nop
     nop
@@ -135,31 +154,29 @@
 .ENDS
 .ORGA $61F4
 .SECTION "Fade61F6_Hook" OVERWRITE
-    ;A happens to be FF here, and the intent is to fade in, so don't worry about fitting in ld a, $D2
-    call FadeMap
+    call FadeIn
     nop
 .ENDS
 
 .BANK $00 SLOT 0
-.SECTION "FadeMap_Code" FREE
-    FadeMap:
+.SECTION "Fade_Code" FREE
+FadeIn:
+    ld a, $D2
+    call SetFade
+    ret
+
+FadeOut:
+    ld a, $D2
+    call SetFade
+    ret
+
+;a = Gameboy BGP Value
+SetFade:
     di
     push af
     SET_WRAMBANK WRAM_PALETTE_BANK
     pop af
-    swap a
-    srl a
-    srl a
-    and $03
-    push bc
-    ld b, a
-    ld a, 2
-    sub b
-    jr nc, _callFadeOut
-    xor a
-_callFadeOut:
-    pop bc
-    call WRAM_PALETTE_CODE + FadeOut - PALETTE_CODE_START
+    call WRAM_PALETTE_CODE + SetFade_Far - PALETTE_CODE_START
     RESET_WRAMBANK
     ei
     ret
@@ -205,6 +222,24 @@ InitialTitlePal:
     .dw $0000,$1002,$1090,$4210
     .dw $0000,$0801,$1090,$4210
 InitialPalEnd:
+
+PaletteLookup:
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
+    .db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    .db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    .db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    .db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    .db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .db $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .db $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+    .db $02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02,$02
 .ENDS
 
 .BANK $10 SLOT 1
@@ -300,12 +335,16 @@ LoadFadeBlack:
 .BANK $10 SLOT 1
 .SECTION "PaletteFarCode" FREE
 PALETTE_CODE_START:
-;a = fadeout level (0 = none, 1 = 50%, 2 = black)
-FadeOut:
+;a = Gameboy BGP value
+SetFade_Far:
     push af
     push bc
     push de
     push hl
+
+    ld hl, WRAM_PALETTE_LOOKUP
+    ld l, a
+    ld a, (hl)
     
 _notzero:
     ld c, a
@@ -384,6 +423,12 @@ PALETTE_CODE_END:
     call CopyFarCodeToWRAM
 
     call InitializeFadeLookup
+
+    ld a, WRAM_PALETTE_BANK
+    ld bc, $0100
+    ld de, WRAM_PALETTE_LOOKUP
+    ld hl, PaletteLookup
+    call CopyFarCodeToWRAM
 
     ld a, WRAM_PALETTE_BANK
     ld bc, PALETTE_CODE_END - PALETTE_CODE_START
