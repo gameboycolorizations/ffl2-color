@@ -33,6 +33,7 @@
 .include "definitions.asm"		; Definitions
 .include "system.asm"
 .include "palettes.asm"
+.include "intro.asm"
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
@@ -75,7 +76,7 @@
 .UNBACKGROUND $0200 $02AB       ; Free space in bank $00
 
 .BANK $00 SLOT 0
-.SECTION "DXCode" FREE
+.SECTION "DXCode" FREE PRIORITY 100
     ld sp,$CF00
 
     ;Double speed ENGAGE!
