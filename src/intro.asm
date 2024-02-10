@@ -7,7 +7,7 @@
 
 .SECTION "IntroLoadPalette_Code" FREE
 IntroLoadPalette0:
-    ld a, $86
+    ld a, $BE
     ldh (<BCPS), a
     ld a, $00
     ldh (<BCPD), a
@@ -16,7 +16,7 @@ IntroLoadPalette0:
     ret
 
 IntroLoadPalette1:
-    ld a, $86
+    ld a, $BE
     ldh (<BCPS), a
     ld a, $10
     ldh (<BCPD), a
@@ -25,7 +25,7 @@ IntroLoadPalette1:
     ret
 
 IntroLoadPalette2:
-    ld a, $86
+    ld a, $BE
     ldh (<BCPS), a
     ld a, $18
     ldh (<BCPD), a
@@ -34,7 +34,7 @@ IntroLoadPalette2:
     ret
 
 IntroLoadPalette3:
-    ld a, $86
+    ld a, $BE
     ldh (<BCPS), a
     ld a, $FF
     ldh (<BCPD), a
@@ -46,8 +46,16 @@ IntroFade:
     SET_WRAMBANK WRAM_PALETTE_BANK
 
     WAITBLANK
-    ld a, $82
+    ld a, $B8
     ldh (<BCPS), a
+    ld a, $00
+    ldh (<BCPD), a
+    ld a, $40
+    ldh (<BCPD), a
+    ld a, $00
+    ldh (<BCPD), a
+    ld a, $40
+    ldh (<BCPD), a
     ld a, $00
     ldh (<BCPD), a
     ld a, $40
