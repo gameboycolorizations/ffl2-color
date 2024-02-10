@@ -13,13 +13,7 @@
 ;de = destination
 ;hl = source
 MenuLoadTiles:
-    di
-    push af
-    SET_WRAMBANK WRAM_MENU_BANK
-    pop af
-    call WRAM_MENU_CODE + MenuLoadTiles_Far - MENU_CODE_START
-    RESET_WRAMBANK
-    ei
+    FARCALL(WRAM_MENU_BANK, WRAM_MENU_CODE + MenuLoadTiles_Far - MENU_CODE_START)
     ret
 .ENDS
 
@@ -59,7 +53,6 @@ _loopTile:
     ret  
 MENU_CODE_END:
 .ENDS
-
 
 .SECTION "MenuFarCodeLoader" FREE APPENDTO "FarCodeLoader"
     ld a, WRAM_MENU_BANK

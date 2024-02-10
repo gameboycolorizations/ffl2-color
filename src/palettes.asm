@@ -172,13 +172,7 @@ FadeOut:
 
 ;a = Gameboy BGP Value
 SetFade:
-    di
-    push af
-    SET_WRAMBANK WRAM_PALETTE_BANK
-    pop af
-    call WRAM_PALETTE_CODE + SetFade_Far - PALETTE_CODE_START
-    RESET_WRAMBANK
-    ei
+    FARCALL(WRAM_PALETTE_BANK, WRAM_PALETTE_CODE + SetFade_Far - PALETTE_CODE_START)
     ret
 .ENDS
 

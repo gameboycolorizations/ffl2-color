@@ -28,6 +28,17 @@
 	pop bc
 .ENDM
 
+.MACRO FARCALL ARGS WRAM_BANK, ADDRESS
+    di
+    push af
+    SET_WRAMBANK WRAM_BANK
+    pop af
+    call ADDRESS
+    RESET_WRAMBANK
+    ei
+    ret
+.ENDM
+
 .MACRO SET_ROMBANK ARGS ROMBANK
 	ld a, ROMBANK
 	ld (CHANGE_BANK), a

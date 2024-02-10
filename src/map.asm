@@ -75,43 +75,19 @@
 .BANK $00 SLOT 0
 .SECTION "Map_Code" FREE
 StoreMetatileID:
-    di
-    push af
-    SET_WRAMBANK WRAM_METATILE_BANK
-    pop af
-    call WRAM_METATILE_CODE + StoreMetatileID_Far - MAP_CODE_START
-    RESET_WRAMBANK
-    ei
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + StoreMetatileID_Far - MAP_CODE_START)
     ret
 
 WriteMetatileToRAM:
-    di
-    push af
-    SET_WRAMBANK WRAM_METATILE_BANK
-    pop af
-    call WRAM_METATILE_CODE + WriteMetatileToRAM_Far - MAP_CODE_START
-    RESET_WRAMBANK
-    ei
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + WriteMetatileToRAM_Far - MAP_CODE_START)
     ret
 
 CopyMetatileToVRAM:
-    di
-    push af
-    SET_WRAMBANK WRAM_METATILE_BANK
-    pop af
-    call WRAM_METATILE_CODE + CopyMetatileToVRAM_Far - MAP_CODE_START
-    RESET_WRAMBANK
-    ei
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + CopyMetatileToVRAM_Far - MAP_CODE_START)
     ret
 
 ReplaceMetatile:
-	di
-	push af
-	SET_WRAMBANK WRAM_METATILE_BANK
-	pop af
-	call WRAM_METATILE_CODE + ReplaceMetatile_Far - MAP_CODE_START
-	RESET_WRAMBANK
-	ei
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + ReplaceMetatile_Far - MAP_CODE_START)
 	ret
 .ENDS
 
