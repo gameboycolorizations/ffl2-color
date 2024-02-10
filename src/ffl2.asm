@@ -66,6 +66,7 @@
 ;0028 bankswitch a:bank
 ;006C memclr hl:addr b:count
 ;0072 memclr hl:addr bc:count
+;0073 memset a: value hl:addr bc:count
 ;0080 memcpy hl:source de:destination b:count
 ;0089 memcpy hl:source de:destination bc:count
 ;00CA memcpy? hl:source de:destination a:bank bc:count
@@ -78,7 +79,7 @@
 ;call $4003
 ;move 0286~02AB to ROM10
 
-.UNBACKGROUND $0200 $02AB       ; Free space in bank $00
+.UNBACKGROUND $0200 $02E6       ; Free space in bank $00
 
 .BANK $00 SLOT 0
 .SECTION "DXCode" FREE PRIORITY 100
@@ -92,19 +93,20 @@
 
     SET_ROMBANK $10
     call InitializeFarCode
-
-    call FFL2Initialize
-    ld a, $0E
-    rst $28
-    call $4003
-    SET_ROMBANK $10
-    call FFL2Initialize2
     SET_ROMBANK $01
-    jp $02AC
+
+    SET_WRAMBANK $07
+    call $D000 + FFL2Initialize - FFL2_CODE_START
+    SET_WRAMBANK $00
+
+    call $500F
+    jp nc, $1900
+    jp $1903
 .ENDS
 
 .BANK $10 SLOT 1
 .SECTION "TransplantedCode" FREE
+FFL2_CODE_START:
 FFL2Initialize:
     di   
     ld   a,$80
@@ -138,7 +140,7 @@ label0229:
     ld   bc,$0D00
     call $0072
     ld   h,$CF
-    ld   b,$11
+    ld   b,$01 ;Modified to not clear WRAM1 - they use all of it for maps anyway
     call $0072
     ld   hl,$FF80
     ld   b,$7F
@@ -174,9 +176,9 @@ label0262:
     ld   de,$C0E0
     ld   b,$0C
     call $0080
-    ret
-
-FFL2Initialize2:
+    ld a, $0E
+    rst $28
+    call $4003
     di   
     xor  a
     ldh  ($45),a
@@ -199,6 +201,44 @@ FFL2Initialize2:
     ldi  (hl),a
     ld   a,$16
     ld   (hl),a
+    call $0550
+    ld   hl,$4800
+    ld   bc,$0800
+    ld   a,$04
+    call $00CA
+    call $04FB
+    ld   hl,$A781
+    ldi  a,(hl)
+    cp   a,$1B
+    jr   nz,label02CA
+    ld   a,(hl)
+    cp   a,$E4
+    jr   z,label02CF
+label02CA:
+    ld   a,$01
+    ld   ($A780),a
+label02CF:
+    call $04F4
+    ld   hl,$C200
+    ld   c,$04
+label02D7:
+    ld   b,$04
+    ld   a,$FF
+    call $006D
+    ld   a,$1C
+    rst  $00
+    dec  c
+    jr   nz,label02D7
+    ld   a,$01
+    rst  $28
     ret
+FFL2_CODE_END:
+.ENDS
 
+.SECTION "TransplantedFarCodeLoader" FREE APPENDTO "FarCodeLoader"
+    ld a, 7
+    ld bc, FFL2_CODE_END - FFL2_CODE_START
+    ld de, $D000
+    ld hl, FFL2_CODE_START
+    call CopyFarCodeToWRAM
 .ENDS
