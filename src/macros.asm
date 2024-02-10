@@ -21,6 +21,13 @@
 	pop af
 .ENDM
 
+.MACRO SWAP_BC_DE
+	push de
+	push bc
+	pop de
+	pop bc
+.ENDM
+
 .MACRO SET_ROMBANK ARGS ROMBANK
 	ld a, ROMBANK
 	ld (CHANGE_BANK), a
