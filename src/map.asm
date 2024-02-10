@@ -8,6 +8,7 @@
 ;2146 is where the metatile data gets written to C400 for columns
 ;215F is where C400 is copied to VRAM for rows
 ;2183 is where C400 is copied to VRAM for columns
+;3887 is where tiles are "unhidden" during map transitions
 
 .BANK $00 SLOT 0
 .ORGA $1F93
@@ -30,7 +31,6 @@
 	nop
 	nop
 .ENDS
-
 .ORGA $215F
 .SECTION "CopyMetatileToVRAM215F_Hook" OVERWRITE
     call CopyMetatileToVRAM
@@ -60,6 +60,16 @@
 	pop de
     nop
     nop
+.ENDS
+.ORGA $3838
+.SECTION "HideMetatile_Hook" OVERWRITE
+	call ReplaceMetatile
+	ret
+.ENDS
+.ORGA $387B
+.SECTION "UnhideMetatile_Hook" OVERWRITE
+	call ReplaceMetatile
+	ret
 .ENDS
 
 .BANK $00 SLOT 0
@@ -93,6 +103,16 @@ CopyMetatileToVRAM:
     RESET_WRAMBANK
     ei
     ret
+
+ReplaceMetatile:
+	di
+	push af
+	SET_WRAMBANK WRAM_METATILE_BANK
+	pop af
+	call WRAM_METATILE_CODE + ReplaceMetatile_Far - MAP_CODE_START
+	RESET_WRAMBANK
+	ei
+	ret
 .ENDS
 
 .BANK $10 SLOT 1
@@ -247,6 +267,36 @@ CopyMetatileToVRAM_Far:
 
 	ret
 
+ReplaceMetatile_Far:
+	push af
+	push de
+	
+	ld de, WRAM_METATILE_IDS
+	ld e, a
+	
+	SET_VRAMBANK 1
+
+	;Couldn't get this to run entirely during VBlank, so we're just
+	;waiting until we're near the end of the frame and making sure
+	;we only draw during VBlank _or_ HBlank.
+_WaitVBlank:
+	ldh a, ($44)
+	cp a, $80
+	jr c, _WaitVBlank
+	cp a, $98
+	jr nc, _WaitVBlank
+
+	WAITBLANK
+	ld a, (de)
+	ld (hl), a
+	
+	RESET_VRAMBANK
+	
+	pop de
+	pop af
+	
+	ld (hl), a
+	ret
 
 MAP_CODE_END
 .ENDS
