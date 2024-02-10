@@ -37,6 +37,7 @@
 .include "metatileattr.asm"
 .include "map.asm"
 .include "menu.asm"
+.include "transition.asm"
 .include "intro.asm"
 
 .BANK $1F SLOT 1
