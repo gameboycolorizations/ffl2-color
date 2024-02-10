@@ -32,9 +32,11 @@
 
 .include "definitions.asm"		; Definitions
 .include "system.asm"
+.include "font.asm"
 .include "palettes.asm"
 .include "metatileattr.asm"
 .include "map.asm"
+.include "menu.asm"
 .include "intro.asm"
 
 .BANK $1F SLOT 1
