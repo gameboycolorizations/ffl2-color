@@ -37,6 +37,8 @@
 .include "metatileattr.asm"
 .include "map.asm"
 .include "menu.asm"
+.include "enemies.asm"
+.include "battle.asm"
 .include "spriteattr.asm"
 .include "sprites.asm"
 .include "transition.asm"

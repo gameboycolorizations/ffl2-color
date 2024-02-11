@@ -356,7 +356,8 @@ _notzero:
 _dontresetpalette:
 
     ld hl, WRAM_BGPALETTE_ADDR
-    ld a, ($DFFF)
+    ld a, ($FF8B)
+    and $02
     swap a
     sla a
     sla a
