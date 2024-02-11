@@ -90,7 +90,13 @@
 ;call $4003
 ;move 0286~02AB to ROM10
 
-.UNBACKGROUND $0200 $02E6       ; Free space in bank $00
+.UNBACKGROUND $01F5 $02EF       ; Free space in bank $00
+
+.BANK $00 SLOT 0
+.ORGA $100
+.SECTION "BootVector" OVERWRITE
+    jp $01F5
+.ENDS
 
 .BANK $00 SLOT 0
 .SECTION "DXCode" FREE PRIORITY 100
@@ -109,9 +115,6 @@
     SET_WRAMBANK WRAM_SCRATCH_BANK
     call $D000 + FFL2Initialize - FFL2_CODE_START
     RESET_WRAMBANK
-
-    ld a, 1
-    ldh ($F0), a
 
     call $500F
     jp nc, $1900
@@ -245,6 +248,10 @@ label02D7:
     jr   nz,label02D7
     ld   a,$01
     rst  $28
+
+    ld a, 1
+    ldh ($F0), a
+
     ret
 FFL2_CODE_END:
 .ENDS

@@ -29,13 +29,9 @@
 .ENDM
 
 .MACRO FARCALL ARGS WRAM_BANK, ADDRESS
-    di
-    push af
-    SET_WRAMBANK WRAM_BANK
-    pop af
-    call ADDRESS
-    RESET_WRAMBANK
-    ei
+	call FarCall
+	.db WRAM_BANK
+    .dw ADDRESS
 .ENDM
 
 .MACRO FARCALL_EI ARGS WRAM_BANK, ADDRESS
