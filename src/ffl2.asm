@@ -37,6 +37,8 @@
 .include "metatileattr.asm"
 .include "map.asm"
 .include "menu.asm"
+.include "spriteattr.asm"
+.include "sprites.asm"
 .include "transition.asm"
 .include "intro.asm"
 
@@ -65,7 +67,7 @@
 
 ;0000 HL = HL + A
 ;0008 ?
-;0010 ?
+;0010 WaitVBlank?
 ;0018 Call sprite OAM DMA ($FF80)
 ;0020 ?
 ;0028 bankswitch a:bank
@@ -107,6 +109,9 @@
     SET_WRAMBANK WRAM_SCRATCH_BANK
     call $D000 + FFL2Initialize - FFL2_CODE_START
     RESET_WRAMBANK
+
+    ld a, 1
+    ldh ($F0), a
 
     call $500F
     jp nc, $1900
