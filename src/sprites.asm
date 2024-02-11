@@ -46,7 +46,6 @@
 .SECTION "Sprite_Code" FREE
 StoreSpriteIDs8:
 	ld a, $03
-	ld bc, $80
 	push af
     FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs8_Far - SPRITE_CODE_START)
     pop af
@@ -73,7 +72,9 @@ SPRITE_CODE_START:
 ;DE is destination, must be $8000~$87FF
 ;HL is source
 StoreSpriteIDs8_Far:
+	ld bc, $80
 	call WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START
+	ld b, $80
 	ret
 
 ;Original code loads tiles into VRAM, additionally we record where they came from to 05:D000 block
