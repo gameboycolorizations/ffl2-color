@@ -208,6 +208,7 @@ CopyMetatileToVRAM_Far:
 	;Add $80 to E to get attributes
 	set 7, e
 
+	WAITBLANK
 	ld a, (de)
 	ldi (hl), a
 	inc e
@@ -226,6 +227,7 @@ CopyMetatileToVRAM_Far:
 
 	RESET_VRAMBANK
 
+	WAITBLANK
 	;Original code
 	ld a, (de)
 	ldi (hl), a
