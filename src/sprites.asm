@@ -105,7 +105,7 @@ StoreSpriteIDs_Far:
   	sla a
   	sla a
   	add $D2
-  	or h
+  	add a, h
   	ld h, a
   	push hl
 
