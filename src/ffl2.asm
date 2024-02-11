@@ -63,13 +63,22 @@
 ;38000 Unknown
 ;3C000 Unknown
 
+;0000 HL = HL + A
+;0008 ?
+;0010 ?
+;0018 Call sprite OAM DMA ($FF80)
+;0020 ?
 ;0028 bankswitch a:bank
+;0030 ?
+;0038 wait for interrupt
+
 ;006C memclr hl:addr b:count
 ;0072 memclr hl:addr bc:count
 ;0073 memset a: value hl:addr bc:count
 ;0080 memcpy hl:source de:destination b:count
 ;0089 memcpy hl:source de:destination bc:count
-;00CA memcpy? hl:source de:destination a:bank bc:count
+;00C3 banked memcpy? hl:source de:destination a:bank b:count
+;00CA banked memcpy? hl:source de:destination a:bank bc:count
 ;04F4 disable RAM, enable interrupts
 ;04FB enable RAM, disable interrupts
 
@@ -95,9 +104,9 @@
     call InitializeFarCode
     SET_ROMBANK $01
 
-    SET_WRAMBANK $07
+    SET_WRAMBANK WRAM_SCRATCH_BANK
     call $D000 + FFL2Initialize - FFL2_CODE_START
-    SET_WRAMBANK $00
+    RESET_WRAMBANK
 
     call $500F
     jp nc, $1900
@@ -236,7 +245,7 @@ FFL2_CODE_END:
 .ENDS
 
 .SECTION "TransplantedFarCodeLoader" FREE APPENDTO "FarCodeLoader"
-    ld a, 7
+    ld a, WRAM_SCRATCH_BANK
     ld bc, FFL2_CODE_END - FFL2_CODE_START
     ld de, $D000
     ld hl, FFL2_CODE_START
