@@ -63,9 +63,16 @@
     nop
     nop
 .ENDS
-.ORGA $3838
-.SECTION "HideMetatile_Hook" OVERWRITE
-	call ReplaceMetatile
+.UNBACKGROUND $21C6 $21E9       ; Free space in bank $00
+.ORGA $21C2
+.SECTION "AnimateTiles_Hook" OVERWRITE
+	call AnimateTiles
+	ret
+.ENDS
+.UNBACKGROUND $21EE $2231       ; Free space in bank $00
+.ORGA $21EA
+.SECTION "AnimateHalfTiles_Hook" OVERWRITE
+	call AnimateHalfTiles
 	ret
 .ENDS
 .ORGA $387B
@@ -90,6 +97,13 @@ CopyMetatileToVRAM:
 
 ReplaceMetatile:
 	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + ReplaceMetatile_Far - MAP_CODE_START)
+	ret
+
+AnimateTiles:
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + AnimateTiles_Far - MAP_CODE_START)
+	ret
+AnimateHalfTiles:
+	FARCALL(WRAM_METATILE_BANK, WRAM_METATILE_CODE + AnimateHalfTiles_Far - MAP_CODE_START)
 	ret
 .ENDS
 
@@ -277,6 +291,96 @@ _WaitVBlank:
 	
 	ld (hl), a
 	ret
+
+AnimateTiles_Far:
+label21C2:
+	ld   a,($C439)
+	add  a,$80
+	ld   l,a
+	xor  a,$40
+	ld   e,a
+	ld   h,$97
+	ld   d,h
+	WAITBLANK
+	ld   a,(de)
+	ld   c,(hl)
+	ldi  (hl),a
+	ld   a,c
+	ld   (de),a
+	inc  e
+	ld   a,(de)
+	ld   c,(hl)
+	ld   (hl),a
+	ld   a,c
+	ld   (de),a
+	set  4,l
+	set  4,e
+	WAITBLANK
+	ld   a,(de)
+	ld   c,(hl)
+	ldd  (hl),a
+	ld   a,c
+	ld   (de),a
+	dec  e
+	ld   a,(de)
+	ld   c,(hl)
+	ld   (hl),a
+	ld   a,c
+	ld   (de),a
+	jr   label221D
+AnimateHalfTiles_Far:
+	ld   a,($C456)
+	or   a
+	jr   z,label21C2
+	ld   e,a
+	ld   d,a
+	WAITBLANK
+	ld   a,($C439)
+	add  a,$C0
+	ld   l,a
+	ld   h,$97
+	ld   c,(hl)
+	set  4,l
+	ld   b,(hl)
+	ld   a,b
+label21FF:
+	rra  
+	rr   c
+	rr   b
+	dec  d
+	jr   nz,label21FF
+	WAITBLANK
+	ld   (hl),b
+	res  4,l
+	ld   (hl),c
+	inc  l
+	ld   c,(hl)
+	set  4,l
+	ld   b,(hl)
+	ld   a,b
+label2211:
+	rra  
+	rr   c
+	rr   b
+	dec  e
+	jr   nz,label2211
+	WAITBLANK
+	ld   (hl),b
+	res  4,l
+	ld   (hl),c
+label221D:
+	ld   a,($C439)
+	inc  a
+	inc  a
+	ld   ($C439),a
+	ld   c,a
+	and  a,$0F
+	ret  nz
+	ld   a,c
+	add  a,$10
+	and  a,$20
+	ld   ($C439),a
+	ret  
 
 MAP_CODE_END
 .ENDS
