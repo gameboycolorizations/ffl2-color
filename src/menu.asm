@@ -20,6 +20,10 @@ MenuLoadTiles:
 .BANK $10 SLOT 1
 .SECTION "MenuFarCode" FREE
 MENU_CODE_START:
+;b = x count
+;c = y count remaining
+;de = destination
+;hl = source
 MenuLoadTiles_Far:
     push af
     SET_VRAMBANK 1

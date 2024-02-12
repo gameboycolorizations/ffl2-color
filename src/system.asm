@@ -7,6 +7,8 @@
 .DEFINE SHADOW_L	$F7
 .DEFINE FARJUMP		$FFF8
 
+;00:04BF seems to be their own implementation of far calling?  Very similar code, so I feel good about that!
+
 .BANK $00 SLOT 0
 .SECTION "FarCall_Code" FREE
 FarCall:
@@ -61,6 +63,50 @@ _ret:
   	;260 cycles vs approximately 64 cycles for a hard coded RAM call
 .ENDS
 
+;Their version of far call - I think mine is probably decently faster, but I didn't count the cycles.
+;If I run out of space again, maybe I can replace theirs with mine and use it?
+;	push af
+;	push hl
+;	push de
+;	ld   hl,sp+$06
+;	ld   a,(hl)
+;	ld   e,a
+;	add  a,$03
+;	ldi  (hl),a
+;	ld   d,(hl)
+;	jr   nc,label04CD
+;	inc  (hl)
+;	label04CD:
+;	ld   l,e
+;	ld   h,d
+;	ldi  a,(hl)
+;	ld   ($C0E7),a
+;	ldi  a,(hl)
+;	ld   ($C0E8),a
+;	ld   a,(hl)
+;	rst  $28
+;	ld   e,a
+;	ld   hl,sp+$05
+;	ld   a,(hl)
+;	di   
+;	ld   (hl),e
+;	ld   ($C0E5),a
+;	pop  de
+;	pop  hl
+;	pop  af
+;	dec  sp
+;	ei   
+;	call $C0E4
+;	push af
+;	push hl
+;	ld   hl,sp+$04
+;	ld   a,(hl)
+;	rst  $28
+;	pop  hl
+;	pop  af
+;	inc  sp
+;	ret  
+
 .BANK $10 SLOT 1
 .SECTION "System_Code" FREE	
 ;a = destination WRAM bank
@@ -84,6 +130,47 @@ _copyCodeLoop:
 
 .SECTION "FarCodeLoader" FREE PRIORITY -1
 InitializeFarCode:
+	;Set default palette to something useful for testing
+	WAITBLANK
+    ld a, $80
+    ldh (<BCPS),a       
+    ld a, $10
+    ldh (<BCPD),a       
+    ld a, $42
+    ldh (<BCPD),a       
+    ld a, $FF
+    ldh (<BCPD),a       
+    ld a, $7F
+    ldh (<BCPD),a       
+    ld a, $18
+    ldh (<BCPD),a       
+    ld a, $63
+    ldh (<BCPD),a       
+    ld a, $00
+    ldh (<BCPD),a       
+    ld a, $00
+    ldh (<BCPD),a       
+
+	WAITBLANK
+    ld a, $80
+    ldh (<OCPS),a       
+    ld a, $10
+    ldh (<OCPD),a       
+    ld a, $42
+    ldh (<OCPD),a       
+    ld a, $FF
+    ldh (<OCPD),a       
+    ld a, $7F
+    ldh (<OCPD),a       
+    ld a, $18
+    ldh (<OCPD),a       
+    ld a, $63
+    ldh (<OCPD),a       
+    ld a, $00
+    ldh (<OCPD),a       
+    ld a, $00
+    ldh (<OCPD),a       
+
 	nop
 .ENDS
 

@@ -1,3 +1,5 @@
+.include "enemies.asm"
+
 ;0d:5326 calls 005D which does (HL*16) + 4000 to get the rom address of the enemy tiles
 ;0f:6292 Battle image loader?
 

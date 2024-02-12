@@ -1,3 +1,5 @@
+.include "spriteattr.asm"
+
 .DEFINE WRAM_SPRITE_IDS		WRAM1 + $0000
 .DEFINE WRAM_SPRITE_ATTR 	WRAM1 + $0200
 .DEFINE WRAM_SPRITE_CODE 	WRAM1 + $0800
@@ -146,10 +148,28 @@ _loop:
 	ret
 
 SpriteDMA_Far:
+	di
 	push hl
 	push bc
 
-	ld a, ($C7DF) ;OAM Shadow top byte
+	;Copied from $0692 which calls RST $18
+	ld   c,$CC
+	ldh  a,($8B)
+	and  a
+	jr   nz, _label06AB
+	ld   a,($C764)
+	and  a
+	jr   nz, _label06AB
+	ldh  a,($96)
+	rrca 
+	jr   c, _label06AB
+	rrca 
+	jr   c, _label06AB
+	ld   a,($C7DF)
+	ld   c,a
+_label06AB:
+	ld   a,c
+
 	ld h, a
 	ld a, 3
 	ld l, a
@@ -165,7 +185,7 @@ _preDMALoop:
 
 	pop bc
 	pop hl
-	ret	
+	reti
 
 SpriteSetAttribute_Far:
 	and $E0
