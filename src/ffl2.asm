@@ -92,7 +92,7 @@
 .UNBACKGROUND $01F5 $02EF       ; Free space in bank $00
 
 .BANK $00 SLOT 0
-.ORGA $100
+.ORGA $0100
 .SECTION "BootVector" OVERWRITE
     jp $01F5
 .ENDS

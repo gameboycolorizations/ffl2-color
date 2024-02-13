@@ -9,7 +9,7 @@
 
 ;00:161F seems to be the highest level call responsible for loading sprites, at least in menus
 ;00:178F clears all but the treasure and pointer sprites from the sprite OAM shadow
-;00:181C loads a sprite OAM tile and attribute
+;00:181C loads a sprite OAM tile and attribute for a menu
 ;00:1F51 seems to be the highest level call responsible for loading the player sprite for the world
 ;00:2A5D clears shadow OAM for a given actor?
 ;00:2932 seems to load treasure and pointer sprites
@@ -27,6 +27,11 @@
     call StoreSpriteIDs8
     nop
 .ENDS
+.ORGA $1819
+.SECTION "WindowSpriteAttribute_Hook" OVERWRITE
+    call WindowSpriteAttribute
+    nop
+.ENDS
 .ORGA $1F51
 .SECTION "StoreSpriteIDs1F51_Hook" OVERWRITE
     call StoreSpriteIDs
@@ -35,34 +40,60 @@
 .SECTION "StoreSpriteIDs2932_Hook" OVERWRITE
     call StoreSpriteIDs
 .ENDS
+.ORGA $2A3B
+.SECTION "PlayerSpriteAttribute_Hook" OVERWRITE
+	call PlayerSpriteAttribute
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+.ENDS
+.ORGA $34B6
+.SECTION "NPCSpriteAttribute_Hook" OVERWRITE
+    call NPCSpriteAttribute
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+.ENDS
 .ORGA $3672
 .SECTION "StoreSpriteIDs3672_Hook" OVERWRITE
     call StoreSpriteIDs
-.ENDS
-.ORGA $00DA
-.SECTION "SpriteDMA_Hook" OVERWRITE
-    call SpriteDMA
 .ENDS
 
 .BANK $00 SLOT 0
 .SECTION "Sprite_Code" FREE
 StoreSpriteIDs8:
+	di
 	ld a, $03
 	push af
+	;NOTE!! All those crashes I was pulling my hair out about weren't in the menu attribute code, they
+	;were in the unprotected far call here.  I don't remember why this has to be the EI variant, so I
+	;am just disabling interrupts outside it.  Figure out why we can't just use FARCALL here.
     FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs8_Far - SPRITE_CODE_START)
     pop af
-    ret
+    reti
 StoreSpriteIDs:
+	di
 	ldh a, ($88)
     FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
+    ei
 	call $00AC
     ret
-SpriteDMA:
-	call $06B0
-	ldh a, ($F0)
-	or a
-	ret z
-    FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + SpriteDMA_Far - SPRITE_CODE_START)
+WindowSpriteAttribute:
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + WindowSpriteAttribute_Far - SPRITE_CODE_START)
+    ret
+NPCSpriteAttribute:
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + NPCSpriteAttribute_Far - SPRITE_CODE_START)
+    ret
+PlayerSpriteAttribute:
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + PlayerSpriteAttribute_Far - SPRITE_CODE_START)
     ret
 .ENDS
 
@@ -147,48 +178,12 @@ _loop:
 	pop hl
 	ret
 
-SpriteDMA_Far:
-	di
-	push hl
+WindowSpriteAttribute_Far:
+	;original code
+	and $F0
+	or c
+
 	push bc
-
-	;Copied from $0692 which calls RST $18
-	ld   c,$CC
-	ldh  a,($8B)
-	and  a
-	jr   nz, _label06AB
-	ld   a,($C764)
-	and  a
-	jr   nz, _label06AB
-	ldh  a,($96)
-	rrca 
-	jr   c, _label06AB
-	rrca 
-	jr   c, _label06AB
-	ld   a,($C7DF)
-	ld   c,a
-_label06AB:
-	ld   a,c
-
-	ld h, a
-	ld a, 3
-	ld l, a
-
-_preDMALoop:
-	ld a, (hl)
-	call WRAM_SPRITE_CODE + SpriteSetAttribute_Far - SPRITE_CODE_START
-	ld a, 4
-	add a, l
-	ld l, a
-	cp $A0
-	jr lst, _preDMALoop
-
-	pop bc
-	pop hl
-	reti
-
-SpriteSetAttribute_Far:
-	and $E0
 	ld b, a
 
 	;Load sprite tile ID from (hl - 1) into A
@@ -205,7 +200,90 @@ SpriteSetAttribute_Far:
 	or b
 	pop hl
 
-	ld (hl), a
+	pop bc
+
+	;original code
+	ldi (hl), a
+	ret
+
+NPCSpriteAttribute_Far:
+	push bc
+
+	;Load sprite tile ID from (de) + c into A
+	ld a, (de)
+	add c
+
+	;load $D000 + A into HL
+	push hl
+	ld h, $D0
+	ld l, a
+
+	;load metatile attribute from HL
+	ld a, (hl)
+	ld b, a
+	pop hl
+
+	;Original code modified to mix in color attribute from B
+	ld a, (de)
+	add c
+	ld (de), a
+	inc e
+	ld a, (de)
+	and $F0
+	or b
+	ld (de), a
+	dec e
+	set 0, d
+	ld a, (de)
+	add c
+	ld (de), a
+	inc e
+	ld a, (de)
+	and $F0
+	or b
+	ld (de), a
+	dec e
+	res 0, d
+
+	pop bc
+	ret
+
+PlayerSpriteAttribute_Far:
+	push bc
+
+	;Load sprite tile ID from (hl) + c into A
+	ld a, (hl)
+	add c
+
+	;load $D000 + A into HL
+	push hl
+	ld h, $D0
+	ld l, a
+
+	;load metatile attribute from HL
+	ld a, (hl)
+	ld b, a
+	pop hl
+
+	;Original code modified to mix in color attribute from B
+	ld a, (hl)
+	add c
+	ldi (hl), a
+	ld a, (hl)
+	and $F0
+	or b
+	ldd (hl), a
+	set 0, h
+	ld a, (hl)
+	add c
+	ldi (hl), a
+	ld a, (hl)
+	and $F0
+	or b
+	ldd (hl), a
+	res 0, h
+
+	pop bc
 	ret
 
 SPRITE_CODE_END:
