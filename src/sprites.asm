@@ -67,6 +67,35 @@
     call StoreSpriteIDs
 .ENDS
 
+
+;01:65DA is where the generic battle effect sprites are loaded
+;0D:5055ish is where the specific battle effect sprites are loaded
+
+.BANK $0D SLOT 1
+.ORGA $505D
+.SECTION "EffectSpriteStoreIDs_Hook" OVERWRITE
+	call EffectSpriteStoreIDs
+.ENDS
+.ORGA $5192
+.SECTION "EffectSpriteAttribute_Hook" OVERWRITE
+	call EffectSpriteAttribute
+	nop
+.ENDS
+
+.SECTION "EffectSpriteStoreIDs_Code" FREE
+;Original code loads tiles into VRAM, additionally we record where they came from to 05:D000 block
+;A is bank
+;BC is byte count
+;DE is destination, must be $8000~$87FF
+;HL is source
+EffectSpriteStoreIDs:
+	push af
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
+    pop af
+    call $00CA
+    ret
+.ENDS
+
 .BANK $00 SLOT 0
 .SECTION "Sprite_Code" FREE
 StoreSpriteIDs8:
@@ -279,6 +308,34 @@ PlayerSpriteAttribute_Far:
 	or b
 	ldd (hl), a
 	res 0, h
+
+	pop bc
+	ret
+
+EffectSpriteAttribute_Far:
+	push bc
+	push af
+
+	;Load sprite tile ID from (hl) into A
+	dec hl
+	ldi a, (hl)
+
+	;load $D000 + A into HL
+	push hl
+	ld h, $D0
+	ld l, a
+
+	;load metatile attribute from HL
+	ld a, (hl)
+	ld c, a
+	pop hl
+
+	pop af
+	;Original code modified to mix in color attribute from B
+	and $10
+	or b
+	or c
+	ldi (hl), a
 
 	pop bc
 	ret
