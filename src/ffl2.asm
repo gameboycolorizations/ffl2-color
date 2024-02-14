@@ -24,6 +24,7 @@
 .UNBACKGROUND $27E01 $27FFF     ; Free space in bank $09
 .UNBACKGROUND $2FFCF $2FFFF     ; Free space in bank $0B
 .UNBACKGROUND $33FF3 $33FFF     ; Free space in bank $0C
+.UNBACKGROUND $360DB $363FF     ; Free space in bank $0D
 .UNBACKGROUND $37EB5 $37FFF     ; Free space in bank $0D
 .UNBACKGROUND $3BFE8 $3BFFF     ; Free space in bank $0E
 .UNBACKGROUND $3FD2D $3FFFF     ; Free space in bank $0F

@@ -2,7 +2,7 @@
 
 .DEFINE WRAM_SPRITE_IDS		WRAM1 + $0000
 .DEFINE WRAM_SPRITE_ATTR 	WRAM1 + $0200
-.DEFINE WRAM_SPRITE_CODE 	WRAM1 + $0800
+.DEFINE WRAM_SPRITE_CODE 	WRAM1 + $0C00
 
 ;Two shadow OAMs for the map that get toggled every few frames?  C000 and C100
 ;Third shadow OAM for menus - CC00
