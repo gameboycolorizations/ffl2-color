@@ -24,12 +24,19 @@ FarCall:
 
 	;Get current return address into HL
 	pop hl
-	;60 cycles
+	inc hl
+	inc hl
+	inc hl
+	push hl
+	dec hl
+	dec hl
+	dec hl
+	;96 cycles
 
 	;Get RAMBANK into (<SVBK)
 	ldi a, (hl)
 	ldh (<SVBK), a
-	;80 cycles
+	;116 cycles
 
 	;Get RAMADDR jp command into $F8~FA
 	ld a, $C3
@@ -38,12 +45,12 @@ FarCall:
 	ldh (<FARJUMP + $01), a
 	ld a, (hl)
 	ldh (<FARJUMP + $02), a
-	;140 cycles
+	;176 cycles
 
 	;Replace return vector
 	ld hl, _ret
 	push hl
-	;168 cycles
+	;204 cycles
 
 	;Get args back
 	ldh a, (SHADOW_H)
@@ -51,16 +58,16 @@ FarCall:
 	ldh a, (SHADOW_L)
 	ld l, a
 	ldh a, (SHADOW_A)
-	;212 cycles
+	;248 cycles
 
 	jp FARJUMP
-	;228 cycles
+	;264 cycles
 _ret:
 	;Reset the RAMBANK
 	xor a
    	ldh (<SVBK), a
   	reti
-  	;260 cycles vs approximately 64 cycles for a hard coded RAM call
+  	;296 cycles vs approximately 64 cycles for a hard coded RAM call
 .ENDS
 
 ;Their version of far call - I think mine is probably decently faster, but I didn't count the cycles.

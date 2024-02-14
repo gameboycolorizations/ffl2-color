@@ -70,20 +70,14 @@
 .BANK $00 SLOT 0
 .SECTION "Sprite_Code" FREE
 StoreSpriteIDs8:
-	di
 	ld a, $03
 	push af
-	;NOTE!! All those crashes I was pulling my hair out about weren't in the menu attribute code, they
-	;were in the unprotected far call here.  I don't remember why this has to be the EI variant, so I
-	;am just disabling interrupts outside it.  Figure out why we can't just use FARCALL here.
-    FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs8_Far - SPRITE_CODE_START)
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs8_Far - SPRITE_CODE_START)
     pop af
     reti
 StoreSpriteIDs:
-	di
 	ldh a, ($88)
-    FARCALL_EI(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
-    ei
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
 	call $00AC
     ret
 WindowSpriteAttribute:
@@ -94,6 +88,9 @@ NPCSpriteAttribute:
     ret
 PlayerSpriteAttribute:
     FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + PlayerSpriteAttribute_Far - SPRITE_CODE_START)
+    ret
+EffectSpriteAttribute:
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + EffectSpriteAttribute_Far - SPRITE_CODE_START)
     ret
 .ENDS
 
