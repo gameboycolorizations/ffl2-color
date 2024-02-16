@@ -9,6 +9,26 @@
 .DEFINE WRAM_PALETTE_CODE       WRAM1 + $0400
 
 .BANK $00 SLOT 0
+.ORGA $1F6B
+.SECTION "DisableLCD_Hook" OVERWRITE
+    ;Replace call to disable LCD with call to existing code that eats entire non h/vblank portion of CPU time.
+    ;GBC double speed mode means we can accomplish the data transfer in roughly the same amount of time as unfettered DMG.
+    call $1674
+    ld a, $C3
+    ldh ($40), a
+    nop
+    nop
+    nop
+.ENDS
+
+.ORGA $1F9B
+.SECTION "EnableLCDC_Hook" OVERWRITE
+    ;Revert to normal LCDC control.
+    call $1691
+    nop
+.ENDS
+
+.BANK $00 SLOT 0
 .ORGA $19F4
 .SECTION "SetFade19F4_Hook" OVERWRITE
     call SetFade
