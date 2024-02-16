@@ -75,8 +75,22 @@
 	call AnimateHalfTiles
 	ret
 .ENDS
+.ORGA $3838
+.SECTION "UnhideMetatile3838_Hook" OVERWRITE
+	call ReplaceMetatile
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+.ENDS
 .ORGA $387B
-.SECTION "UnhideMetatile_Hook" OVERWRITE
+.SECTION "UnhideMetatile387B_Hook" OVERWRITE
 	call ReplaceMetatile
 	ret
 .ENDS
