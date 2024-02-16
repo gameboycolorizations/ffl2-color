@@ -134,6 +134,22 @@
     nop
     nop
 .ENDS
+.ORGA $628C
+;Inn
+.SECTION "Fade628C_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
+.ORGA $64BF
+;Shop
+.SECTION "Fade64BF_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
 .ORGA $6D2D
 .SECTION "Fade6D2D_Hook" OVERWRITE
     call SetFade
