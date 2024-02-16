@@ -6,6 +6,11 @@
 .DEFINE WRAM_TRANSITION_CODE WRAM1 + $0100
 
 .BANK $00 SLOT 0
+.ORGA $2DB4
+.SECTION "TransitionCopyTilesReverse_Hook" OVERWRITE
+    call TransitionCopyTilesReverse
+.ENDS
+
 .ORGA $2E28
 .SECTION "TransitionCopyTiles_Hook" OVERWRITE
     call TransitionCopyTiles
@@ -17,6 +22,22 @@
 
 .BANK $00 SLOT 0
 .SECTION "Transition_Code" FREE
+;b = x count
+;c = y count remaining
+;hl = source
+;de = destination
+TransitionCopyTilesReverse:
+    SET_VRAMBANK 1
+    ld a, (de)
+    ld (hl), a
+    RESET_VRAMBANK
+
+    ;original code
+    ld a, (de)
+    ld (hl), a
+    ld a, l
+    ret
+
 ;b = x count
 ;c = y count remaining
 ;de = destination
