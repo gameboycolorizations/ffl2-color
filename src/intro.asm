@@ -1,8 +1,10 @@
-.UNBACKGROUND $6917 $6958
+.UNBACKGROUND $691F $6958
 
 .BANK $01 SLOT 1
-.SECTION "Intro" FREE
-	call IntroFade
+.ORGA $6917
+.SECTION "Intro_Hook" OVERWRITE
+    call IntroFade
+    jp $6958
 .ENDS
 
 .SECTION "IntroLoadPalette_Code" FREE

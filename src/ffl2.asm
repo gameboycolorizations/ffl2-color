@@ -41,6 +41,7 @@
 .include "sprites.asm"
 .include "transition.asm"
 .include "intro.asm"
+.include "title.asm"
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
