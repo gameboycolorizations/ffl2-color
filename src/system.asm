@@ -138,45 +138,45 @@ _copyCodeLoop:
 .SECTION "FarCodeLoader" FREE PRIORITY -1
 InitializeFarCode:
 	;Set default palette to something useful for testing
-	WAITBLANK
-    ld a, $80
-    ldh (<BCPS),a       
-    ld a, $10
-    ldh (<BCPD),a       
-    ld a, $42
-    ldh (<BCPD),a       
-    ld a, $FF
-    ldh (<BCPD),a       
-    ld a, $7F
-    ldh (<BCPD),a       
-    ld a, $18
-    ldh (<BCPD),a       
-    ld a, $63
-    ldh (<BCPD),a       
-    ld a, $00
-    ldh (<BCPD),a       
-    ld a, $00
-    ldh (<BCPD),a       
-
-	WAITBLANK
-    ld a, $80
-    ldh (<OCPS),a       
-    ld a, $10
-    ldh (<OCPD),a       
-    ld a, $42
-    ldh (<OCPD),a       
-    ld a, $FF
-    ldh (<OCPD),a       
-    ld a, $7F
-    ldh (<OCPD),a       
-    ld a, $18
-    ldh (<OCPD),a       
-    ld a, $63
-    ldh (<OCPD),a       
-    ld a, $00
-    ldh (<OCPD),a       
-    ld a, $00
-    ldh (<OCPD),a       
+;	WAITBLANK
+;    ld a, $80
+;    ldh (<BCPS),a       
+;    ld a, $10
+;    ldh (<BCPD),a       
+;    ld a, $42
+;    ldh (<BCPD),a       
+;    ld a, $FF
+;    ldh (<BCPD),a       
+;    ld a, $7F
+;    ldh (<BCPD),a       
+;    ld a, $18
+;    ldh (<BCPD),a       
+;    ld a, $63
+;    ldh (<BCPD),a       
+;    ld a, $00
+;    ldh (<BCPD),a       
+;    ld a, $00
+;    ldh (<BCPD),a       
+;
+;	WAITBLANK
+;    ld a, $80
+;    ldh (<OCPS),a       
+;    ld a, $10
+;    ldh (<OCPD),a       
+;    ld a, $42
+;    ldh (<OCPD),a       
+;    ld a, $FF
+;    ldh (<OCPD),a       
+;    ld a, $7F
+;    ldh (<OCPD),a       
+;    ld a, $18
+;    ldh (<OCPD),a       
+;    ld a, $63
+;    ldh (<OCPD),a       
+;    ld a, $00
+;    ldh (<OCPD),a       
+;    ld a, $00
+;    ldh (<OCPD),a       
 
 	nop
 .ENDS
