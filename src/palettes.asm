@@ -76,6 +76,13 @@
     nop
     nop
 .ENDS
+.ORGA $3D0E
+.SECTION "SetFade3D0E_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
 .ORGA $3EC6
 .SECTION "SetFade3EC5_Hook" OVERWRITE
     call SetFade
@@ -157,6 +164,15 @@
     nop
     nop
     nop
+    nop
+    nop
+    nop
+.ENDS
+
+.BANK $0D SLOT 1
+.ORGA $425B
+.SECTION "Fade425B_Hook" OVERWRITE
+    call SetFade
     nop
     nop
     nop

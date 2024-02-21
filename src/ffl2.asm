@@ -43,6 +43,9 @@
 .include "intro.asm"
 .include "title.asm"
 
+;TODO: Dunatis town shadows are dirt but should be grass.  Maybe use tileset 9 to create duplicate tileset
+;TODO: Enemy battles use wrong colors for certain combinations of enemies
+
 .BANK $1F SLOT 1
 .ORGA $7FFF
 .SECTION "The End" OVERWRITE
@@ -100,17 +103,27 @@
 .ENDS
 
 .BANK $00 SLOT 0
-.SECTION "DXCode" FREE PRIORITY 100
-    ld sp,$CF00
+.ORGA $0F0D
+.SECTION "GameoverVector" OVERWRITE
+    jp nz, Reboot
+.ENDS
 
+.BANK $00 SLOT 0
+.SECTION "DXCode" FREE PRIORITY 100
     ;Double speed ENGAGE!
     ld a, 1
     ldh ($4D), a
     stop
     nop
 
+Reboot:
+    ld a, $C9
+    ld ($C703), a
+    ld ($C706), a
+    ld sp,$CF00
+
     SET_ROMBANK $10
-    call InitializeFarCode
+    call InitializeSystem
     SET_ROMBANK $01
 
     SET_WRAMBANK WRAM_SCRATCH_BANK

@@ -136,7 +136,43 @@ _copyCodeLoop:
 .ENDS
 
 .SECTION "FarCodeLoader" FREE PRIORITY -1
-InitializeFarCode:
+InitializeSystem:
+	ld c, $80
+_clearHRAMLoop:
+	xor a
+	ldh (c), a
+	inc c
+	jr nz, _clearHRAMLoop
+	
+	ld b, 1
+_InitializeWRAMBankLoop:
+	ld a, b
+	ldh (<SVBK), a
+	ld hl, $D000
+_InitializeWRAMByteLoop:
+	ld a, $00
+	ldi (hl), a
+	ld a, h
+	cp $E0
+	jp lst, _InitializeWRAMByteLoop
+	inc b
+	ld a, b
+	cp $8
+	jp lst, _InitializeWRAMBankLoop
+
+	SET_VRAMBANK 1
+	ld hl, $9000
+	ld bc, $1000
+_clearVRAM:
+	WAITBLANK
+	xor a
+	ldi (hl), a
+	dec bc
+	ld a, b
+	or c
+	jr nz, _clearVRAM
+	RESET_VRAMBANK
+
 	;Set default palette to something useful for testing
 ;	WAITBLANK
 ;    ld a, $80
