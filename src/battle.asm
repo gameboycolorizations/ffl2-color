@@ -29,13 +29,24 @@
 LoadEnemyTileIDs:
 	push af
 	SET_VRAMBANK 1
-	ldh a, ($90)
+
+	;Find the ($90)th enemy that has a non-zero count
+	push bc
 	push de
 	ld de, $CFE0
-	sla a
-	add a, e
-	ld e, a
-	inc e
+	ldh a, ($90)
+	inc a
+	ld b, a
+_findLoop:
+	ld a, (de)
+	inc de
+	inc de
+	or a
+	jr z, _findLoop
+	dec b
+	jr nz, _findLoop
+	;Get the previous byte, that's the ($90)th enemy's count byte.
+	dec e
 	ld a, (de)
 
 	push hl
@@ -46,6 +57,7 @@ LoadEnemyTileIDs:
 	ld a, (hl)
 	pop hl
 	pop de
+	pop bc
 	ld (hl), a
 	RESET_VRAMBANK
 	pop af
