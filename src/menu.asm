@@ -17,6 +17,67 @@ MenuLoadTiles:
     ret
 .ENDS
 
+.BANK $01 SLOT 1
+.ORGA $5F2B
+.SECTION "ClearMenuBackground_Hook" OVERWRITE
+    call ClearMenuBackground
+    jp   $017A  ;Disable lock out
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+.ENDS
+.SECTION "ClearMenuBackground_Code" FREE
+ClearMenuBackground:
+    SET_VRAMBANK 1
+
+    ld   e,$07
+    ld   hl,$9C00
+    ld   c,$12
+    call $0177  ;Enable lock out CPU during non vblank
+_clearLoopAttr:
+    ld   b,$14
+    ld   a,e
+    call $006D  ;Memset
+    ld   a,$0C
+    rst  $00
+    dec  c
+    jr   nz,_clearLoopAttr
+    ;jp   $017A  ;Disable lock out
+
+    RESET_VRAMBANK 0
+
+    ;original code    
+    ld   e,$75
+    ld   hl,$9C00
+    ld   c,$12
+    ;call $0177  ;Enable lock out CPU during non vblank
+_clearLoopTileID:
+    ld   b,$14
+    ld   a,e
+    call $006D  ;Memset
+    ld   a,$0C
+    rst  $00
+    dec  c
+    jr   nz,_clearLoopTileID
+    ret
+.ENDS
+
 .BANK $10 SLOT 1
 .SECTION "MenuFarCode" FREE
 MENU_CODE_START:
