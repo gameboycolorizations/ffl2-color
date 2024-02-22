@@ -43,7 +43,7 @@
 .include "intro.asm"
 .include "title.asm"
 
-;TODO: Dunatis town shadows are dirt but should be grass.  Maybe use tileset 9 to create duplicate tileset
+;TODO: Meat I guess
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
