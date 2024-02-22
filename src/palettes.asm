@@ -114,6 +114,13 @@
     nop
     nop
 .ENDS
+.ORGA $5EB9
+.SECTION "Fade5EB9_Hook" OVERWRITE
+    call SetFade
+    nop
+    nop
+    nop
+.ENDS
 .ORGA $5ED3
 .SECTION "Fade5ED3_Hook" OVERWRITE
     call SetFade
@@ -135,15 +142,15 @@
     ei
     nop
 .ENDS
-.ORGA $5EB9
-.SECTION "Fade5EB9_Hook" OVERWRITE
+.ORGA $5F24
+.SECTION "Fade5F24_Hook" OVERWRITE
     call SetFade
     nop
     nop
     nop
 .ENDS
-.ORGA $5F24
-.SECTION "Fade5F24_Hook" OVERWRITE
+.ORGA $5F53
+.SECTION "Fade5F53_Hook" OVERWRITE
     call SetFade
     nop
     nop

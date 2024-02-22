@@ -44,6 +44,7 @@
 .include "title.asm"
 
 ;TODO: Meat I guess
+;TODO: Make the cure spell blue and green
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
