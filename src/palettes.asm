@@ -36,6 +36,14 @@
     nop
     nop
 .ENDS
+.ORGA $296D
+.SECTION "SetFade296D_Hook" OVERWRITE
+    call FlashPlayerSprite
+.ENDS
+.ORGA $2981
+.SECTION "SetFade2981_Hook" OVERWRITE
+    call FlashPlayerSprite
+.ENDS
 .ORGA $28FE
 .SECTION "SetFade28FE_Hook" OVERWRITE
     call SetFade
@@ -222,6 +230,10 @@ FadeOut:
     call SetFade
     ret
 
+FlashPlayerSprite:
+    FARCALL(WRAM_PALETTE_BANK, WRAM_PALETTE_CODE + FlashPlayerSprite_Far - PALETTE_CODE_START)
+    ret
+
 ;a = Gameboy BGP Value
 SetFade:
     FARCALL(WRAM_PALETTE_BANK, WRAM_PALETTE_CODE + SetFade_Far - PALETTE_CODE_START)
@@ -381,6 +393,33 @@ LoadFadeBlack:
 .BANK $10 SLOT 1
 .SECTION "PaletteFarCode" FREE
 PALETTE_CODE_START:
+FlashPlayerSprite_Far:
+    ld a, ($C003)
+    xor $04
+    ld ($C003), a
+    ld a, ($C007)
+    xor $04
+    ld ($C007), a
+    ld a, ($C00B)
+    xor $04
+    ld ($C00B), a
+    ld a, ($C00F)
+    xor $04
+    ld ($C00F), a
+    ld a, ($C103)
+    xor $04
+    ld ($C103), a
+    ld a, ($C107)
+    xor $04
+    ld ($C107), a
+    ld a, ($C10B)
+    xor $04
+    ld ($C10B), a
+    ld a, ($C10F)
+    xor $04
+    ld ($C10F), a
+    ret
+
 ;a = Gameboy BGP value
 SetFade_Far:
     push af
