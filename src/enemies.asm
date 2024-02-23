@@ -90,17 +90,17 @@ EnemyColors:
 	;C3 Terorist		C4 Mercenar			C5 Commando			C6 SS	 			C7 EchigoYa
 	.db COLOR_PURPLE,	COLOR_ORANGE,		COLOR_GREEN,		COLOR_GRAY,			COLOR_RED
 	;C8 Conjurer		C9 Magician			CA Sorcerer			CB Wizard			CC INVALID
-	.db COLOR_GREEN,	COLOR_GRAY,			COLOR_BLUE,			COLOR_PURPLE,		$00,$00,$00,$00
+	.db COLOR_GREEN,	COLOR_GRAY,			COLOR_BLUE,			COLOR_PURPLE,		$00
 	;CD ROBO-28			CE ROBO-Z			CF Ridean			D0 G-7				D1 Dunatis
 	.db COLOR_GREEN,	COLOR_PURPLE,		COLOR_ORANGE,		COLOR_GRAY,			COLOR_BLUE
 	;D2 MechBug			D3 Hawk				D4 Falcon			D5 Intercpt			D6 INVALID
-	.db COLOR_PURPLE,	COLOR_ORANGE,		COLOR_RED,			COLOR_BLUE,			$00,$00,$00,$00
+	.db COLOR_PURPLE,	COLOR_ORANGE,		COLOR_RED,			COLOR_BLUE,			$00
 	;D7 Plasma			D8 Phagocyt			D9 Corpuscl			DA Cancer			DB INVALID
-	.db COLOR_GRAY,		COLOR_AQUA,			COLOR_RED,			COLOR_PURPLE,		$00,$00,$00,$00
+	.db COLOR_GRAY,		COLOR_AQUA,			COLOR_RED,			COLOR_PURPLE,		$00
 	;DC Grippe			DD Virus			DE Pathogen			DF Plague			E0 INVALID
-	.db COLOR_GRAY,		COLOR_AQUA,			COLOR_RED,			COLOR_PURPLE,		$00,$00,$00,$00
+	.db COLOR_GRAY,		COLOR_AQUA,			COLOR_RED,			COLOR_PURPLE,		$00
 	;E1 Teacher			E2 Cleric			E3 Unknown			E4 Unknown			E5 Girl
-	.db COLOR_GREEN,	COLOR_GRAY,			$00,$00,$00,$00,	$00,$00,$00,$00,	COLOR_BLUE
+	.db COLOR_GREEN,	COLOR_GRAY,			$00,				$00,				COLOR_BLUE
 	;E6 Guardian		E7 Girl				E8 Detectiv			E9 Samurai			EA Guardian
 	.db COLOR_ORANGE,	COLOR_GRAY,			COLOR_AQUA,			COLOR_PURPLE,		COLOR_RED
 	;EB Ancient			EC Haniwa			ED Dolphin			EE OdinCrow			EF WarMach
@@ -108,7 +108,7 @@ EnemyColors:
 	;F0 Human M			F1 Human F			F2 Mutant M			F3 Mutant F			F4 Robot
 	.db COLOR_RED,		COLOR_BLUE,			COLOR_GREEN,		COLOR_ORANGE,		COLOR_BLUE
 	;F5 Slime			F6 Baby-D			F7 Imp				F8 Ashura			F9 Venus
-	.db COLOR_GREEN,	COLOR_GREEN,		COLOR_PURPLE,		COLOR_ORANGE,		COLOR_PURPLE
+	.db COLOR_GREEN,	COLOR_GREEN,		COLOR_PURPLE,		COLOR_ORANGE,		COLOR_AQUA
 	;FA Sho-Gun			FB Magnate			FC Odin				FD Minion			FE Apollo
 	.db COLOR_GRAY,		COLOR_AQUA,			COLOR_ORANGE,		COLOR_BLUE,			COLOR_PURPLE
 	;FF Arsenal
