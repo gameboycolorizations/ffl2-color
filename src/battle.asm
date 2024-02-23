@@ -1,3 +1,5 @@
+.DEFINE WRAM_BATTLE_CODE       WRAM1 + $0400
+
 .include "enemies.asm"
 
 ;0d:5326 calls 005D which does (HL*16) + 4000 to get the rom address of the enemy tiles
@@ -13,6 +15,16 @@
 ;d936..d938 x offset for each enemy group (adjusted based on graphics size)
 ;d939..d93b y offset for each enemy group (adjusted based on graphics size)
 
+.BANK $01 SLOT 1
+.ORGA $6FC1
+.SECTION "ColorizeMeat_Hook6FC1" OVERWRITE
+	call ColorizeMeat
+.ENDS
+.ORGA $6FC8
+.SECTION "ColorizeMeat_Hook6FC8" OVERWRITE
+	call ColorizeMeat
+.ENDS
+
 .BANK $0F SLOT 1
 .ORGA $616C
 .SECTION "LoadEnemyTileIDs_Hook" OVERWRITE
@@ -21,6 +33,15 @@
     nop
     nop
     nop
+.ENDS
+
+.BANK $00 SLOT 0
+.SECTION "Battle_FarCode" FREE
+ColorizeMeat:
+	FARCALL(WRAM_BATTLE_BANK, WRAM_BATTLE_CODE + ColorizeMeat_Far - BATTLE_CODE_START)
+	;Farcall loses the AF register results, but we know it needs to be 1.
+	ld a, 1
+	ret
 .ENDS
 
 .BANK $0F SLOT 1
@@ -69,4 +90,31 @@ _skip:
 	inc hl
 	inc d
 	ret
+.ENDS
+
+.BANK $10 SLOT 1
+.SECTION "BattleFarCode" FREE
+BATTLE_CODE_START:
+ColorizeMeat_Far:
+    push af
+    SET_VRAMBANK 1
+    ld a, $01
+    ldi (hl), a
+    ldd (hl), a
+    RESET_VRAMBANK
+    pop af
+    ;original code
+    ldi (hl), a
+    inc a
+    ldi (hl), a
+    ret
+BATTLE_CODE_END:
+.ENDS
+
+.SECTION "BattleFarCodeLoader" FREE APPENDTO "FarCodeLoader"
+    ld a, WRAM_BATTLE_BANK
+    ld bc, BATTLE_CODE_END - BATTLE_CODE_START
+    ld de, WRAM_BATTLE_CODE
+    ld hl, BATTLE_CODE_START
+    call CopyFarCodeToWRAM
 .ENDS
