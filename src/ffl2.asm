@@ -43,8 +43,7 @@
 .include "intro.asm"
 .include "title.asm"
 
-;TODO: Meat I guess
-;TODO: Make the cure spell blue and green
+;TODO: Missile explosions are sometimes colored and sometimes not... the effect table is probably getting overwritten?
 
 .BANK $1F SLOT 1
 .ORGA $7FFF

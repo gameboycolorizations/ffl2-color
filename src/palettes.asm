@@ -91,15 +91,15 @@
     nop
     nop
 .ENDS
-.ORGA $3EC6
-.SECTION "SetFade3EC5_Hook" OVERWRITE
+.ORGA $3E80
+.SECTION "SetFade3E80_Hook" OVERWRITE
     call SetFade
     nop
     nop
     nop
 .ENDS
-.ORGA $3E80
-.SECTION "SetFade3E80_Hook" OVERWRITE
+.ORGA $3EC6
+.SECTION "SetFade3EC5_Hook" OVERWRITE
     call SetFade
     nop
     nop
@@ -235,6 +235,10 @@ FadeIn:
 FadeOut:
     ld a, $D2
     call SetFade
+    ret
+
+LoadWhiteBGPalette:
+    FARCALL(WRAM_PALETTE_BANK, WRAM_PALETTE_CODE + LoadWhiteBGPalette_Far - PALETTE_CODE_START)
     ret
 
 FlashPlayerSprite:
@@ -400,6 +404,62 @@ LoadFadeBlack:
 .BANK $10 SLOT 1
 .SECTION "PaletteFarCode" FREE
 PALETTE_CODE_START:
+LoadWhiteBGPalette_Far:
+    ld a, $FF
+    ld ($DFFE), a
+    ld a, $80            ; Set index to first color + auto-increment
+    ldh (<BCPS),a       
+    ld b, 64             ; 32 color entries=0x40 bytes
+_LoopSetAllWhiteBGPAL:
+    WAITBLANK
+    ld a, $FF
+    ldh (<BCPD),a
+    dec b
+    jr nz, _LoopSetAllWhiteBGPAL
+    ret
+
+LoadWhiteOBJPalette_Far:
+    ld a, $FF
+    ld ($DFFE), a
+    ld a, $80            ; Set index to first color + auto-increment
+    ldh (<OCPS),a       
+    ld b, 64             ; 32 color entries=0x40 bytes
+_LoopSetAllWhiteOBJPAL:
+    WAITBLANK
+    ld a, $FF
+    ldh (<OCPD),a
+    dec b
+    jr nz, _LoopSetAllWhiteOBJPAL
+    ret
+
+LoadBlackBGPalette_Far:
+    ld a, $FF
+    ld ($DFFE), a
+    ld a, $80            ; Set index to first color + auto-increment
+    ldh (<BCPS),a       
+    ld b, 64             ; 32 color entries=0x40 bytes
+_LoopSetAllBlackBGPAL:
+    WAITBLANK
+    xor a
+    ldh (<BCPD),a
+    dec b
+    jr nz, _LoopSetAllBlackBGPAL
+    ret
+
+LoadBlackOBJPalette_Far:
+    ld a, $FF
+    ld ($DFFE), a
+    ld a, $80            ; Set index to first color + auto-increment
+    ldh (<OCPS),a       
+    ld b, 64             ; 32 color entries=0x40 bytes
+_LoopSetAllBlackOBJPAL:
+    WAITBLANK
+    xor a
+    ldh (<OCPD),a
+    dec b
+    jr nz, _LoopSetAllBlackOBJPAL
+    ret
+
 FlashPlayerSprite_Far:
     ld a, ($C003)
     xor $04
@@ -443,6 +503,19 @@ _notzero:
     ld a, ($DFFE)
     cp c
     jr equ, _done
+
+    ldh a, ($C0) ;Screen wipe flag - 00 = fade, 01 = corners, 02+ different types of wavey
+    cp $01
+    jr neq, _fadeToBlack
+    call WRAM_PALETTE_CODE + LoadWhiteBGPalette_Far - PALETTE_CODE_START
+    call WRAM_PALETTE_CODE + LoadWhiteOBJPalette_Far - PALETTE_CODE_START
+    pop hl
+    pop de
+    pop bc
+    pop af
+    ret
+    
+_fadeToBlack:
 
     ld a, c
     ld ($DFFE), a
