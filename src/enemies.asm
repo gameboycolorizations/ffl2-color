@@ -112,5 +112,5 @@ EnemyColors:
 	;FA Sho-Gun			FB Magnate			FC Odin				FD Minion			FE Apollo
 	.db COLOR_RED,		COLOR_PURPLE,		COLOR_ORANGE,		COLOR_BLUE,			COLOR_PURPLE
 	;FF Arsenal
-	.db COLOR_GRAY
+	.db COLOR_AQUA
 .ENDS

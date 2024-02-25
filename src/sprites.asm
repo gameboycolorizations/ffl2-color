@@ -22,7 +22,7 @@
 ;never "active"
 
 .BANK $00 SLOT 0
-.ORGA $161B
+.ORGA $161B ;Menu sprites
 .SECTION "StoreSpriteIDs161B_Hook" OVERWRITE
     call StoreSpriteIDs8
     nop
@@ -87,6 +87,16 @@
 	call EffectSpriteAttribute
 	nop
 .ENDS
+.ORGA $60AE ;Specific to flare?  Big explosions in general?
+.SECTION "FlareEffectSpriteAttribute_Hook" OVERWRITE
+	call FlareEffectSpriteAttribute
+	nop
+.ENDS
+.ORGA $60BE ;Specific to flare?  Big explosions in general?
+.SECTION "FlareEffectSpriteStoreIDs_Hook" OVERWRITE
+	call FlareEffectSpriteStoreIDs
+	;call $60BE
+.ENDS
 
 .SECTION "EffectSpriteStoreIDs_Code" FREE
 ;Original code loads tiles into VRAM, additionally we record where they came from to 05:D000 block
@@ -133,6 +143,21 @@ PlayerSpriteAttribute:
 EffectSpriteAttribute:
     FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + EffectSpriteAttribute_Far - SPRITE_CODE_START)
     ret
+FlareEffectSpriteStoreIDs:
+	ld de, $8000
+	push bc
+	push af
+	xor a
+	ld c, b
+	ld b, a
+	ld a, $04 ;Always bank 4
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
+    pop af
+    pop bc
+    ret
+FlareEffectSpriteAttribute:
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + FlareEffectSpriteAttribute_Far - SPRITE_CODE_START)
+    ret
 .ENDS
 
 .BANK $10 SLOT 1
@@ -147,6 +172,9 @@ StoreSpriteIDs8_Far:
 	call WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START
 	ld b, $80
 	ret
+
+FlareEffectSpriteStoreIDs_Far:
+
 
 ;Original code loads tiles into VRAM, additionally we record where they came from to 05:D000 block
 ;A is bank
@@ -348,6 +376,35 @@ EffectSpriteAttribute_Far:
 	or b
 	or c
 	ldi (hl), a
+
+	pop bc
+	ret
+
+FlareEffectSpriteAttribute_Far:
+	push bc
+	push af
+
+	;Load sprite tile ID from (de) into A
+	dec de
+	ld a, (de)
+	inc de
+
+	;load $D000 + A into DE
+	push de
+	ld d, $D0
+	ld e, a
+
+	;load metatile attribute from DE
+	ld a, (de)
+	ld c, a
+	pop de
+
+	pop af
+	;Original code modified to mix in color attribute from B
+	and $F0
+	or c
+	ld (de), a
+	inc de
 
 	pop bc
 	ret

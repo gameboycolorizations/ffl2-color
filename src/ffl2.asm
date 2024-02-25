@@ -43,7 +43,8 @@
 .include "intro.asm"
 .include "title.asm"
 
-;TODO: Battle transition briefly flashes black.  Ideally it should not.
+;TODO: Transition out of final dungeon is broken _SOMETIMES_.  Ugh.
+;TODO: Flare flickers, but it kinda looks cool.
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
