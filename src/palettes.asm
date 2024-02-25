@@ -58,9 +58,9 @@
     nop
     nop
 .ENDS
-.ORGA $2CF0
+.ORGA $2CF0 ;Battle transition fade to white
 .SECTION "SetFade2CF0_Hook" OVERWRITE
-    call SetFade
+    call LoadWhiteBGPalette
     nop
     nop
     nop
@@ -194,9 +194,9 @@
 .ENDS
 
 .BANK $0F SLOT 1
-.ORGA $609A
+.ORGA $609A ;Battle transition fade to white
 .SECTION "Fade609A_Hook" OVERWRITE
-    call SetFade
+    call LoadWhiteBGPalette
     nop
     nop
     nop
