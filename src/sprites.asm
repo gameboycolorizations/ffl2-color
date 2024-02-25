@@ -69,6 +69,12 @@
 
 
 ;01:65DA is where the generic battle effect sprites are loaded
+.BANK $01 SLOT 1
+.ORGA $6D57
+.SECTION "CommonEffectSpriteStoreIDs_Hook6D5A" OVERWRITE
+	call CommonEffectSpriteStoreIDs
+.ENDS
+
 ;0D:5055ish is where the specific battle effect sprites are loaded
 
 .BANK $0D SLOT 1
@@ -108,6 +114,12 @@ StoreSpriteIDs:
 	ldh a, ($88)
     FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
 	call $00AC
+    ret
+CommonEffectSpriteStoreIDs:
+	push af
+	ld hl, $6000
+    FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + StoreSpriteIDs_Far - SPRITE_CODE_START)
+    pop af
     ret
 WindowSpriteAttribute:
     FARCALL(WRAM_SPRITE_BANK, WRAM_SPRITE_CODE + WindowSpriteAttribute_Far - SPRITE_CODE_START)

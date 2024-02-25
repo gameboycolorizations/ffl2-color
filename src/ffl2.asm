@@ -43,7 +43,7 @@
 .include "intro.asm"
 .include "title.asm"
 
-;TODO: Missile explosions are sometimes colored and sometimes not... the effect table is probably getting overwritten?
+;TODO: Battle transition briefly flashes black.  Ideally it should not.
 
 .BANK $1F SLOT 1
 .ORGA $7FFF
