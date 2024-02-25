@@ -18,6 +18,8 @@
 .COMPUTEGBCHECKSUM              ; Computes the ROM checksum ($014E-$014F)
 
 .BACKGROUND "Final Fantasy Legend II (USA).gb"
+
+.NAME "SAGA2 DX"
 ;.UNBACKGROUND $3FF9 $3FFF       ; Free space in bank $00
 .UNBACKGROUND $7E28 $7FFF       ; Free space in bank $01
 ;.UNBACKGROUND $FFC0 $FFFF       ; Free space in bank $03
